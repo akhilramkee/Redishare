@@ -18,8 +18,53 @@ router.get('/login',function(req,res,next){
 });
 
 
+
 router.post('/postTag',function(req,res){
-      console.log(req.signedCookies);
+      var date=new Date();
+      var post={
+        "content":req.body.post_txt,
+        "tag":req.body.tag,
+        "email":req.body.username
+      };
+      var postid;
+      var tagid;
+/*      connection.query('INSERT INTO postContent(content,email,created) values(?,?,?)',[post.content,post.email,date])
+      .then((result)=>{
+          console.log(result);
+          postid=result.insertId;
+          connection.query('Insert INTO TAG(tagName) values(?)',post.tag)
+          .then((result)=>{
+              tagid=result.insertId;
+              console.log(result);
+              connection.query('Insert INTO tag_post_mapping(tagid,postid) values(?,?)',[tagid,postid])
+              .then((result)=>{
+                  console.log(result);
+              })
+              .catch((err)=>{
+                console.log(err);
+              })
+          })
+          .catch((err)=>{
+              console.log(err);
+          })
+          connection.query('Select * from postContent')
+          .then((result)=>{
+              console.log(result);
+          })
+      })
+      .catch((err)=>{
+          console.log(err);
+      })
+*/
+  connection.query('Select * from postContent')
+  .then((result)=>{
+        var content=JSON.stringify(result);
+        console.log(content);
+        res.render('userPortal',{post:content})
+    })
+    .catch(err=>{
+      console.log(err);
+    })
 });
 
 
