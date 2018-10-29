@@ -1,0 +1,88 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+nav ul a,
+nav .brand-logo {
+  color: #444;
+}
+
+p {
+  line-height: 2rem;
+}
+
+.sidenav-trigger {
+  color: #26a69a;
+}
+
+.parallax-container {
+  min-height: 380px;
+  line-height: 0;
+  height: auto;
+  color: rgba(255,255,255,.9);
+}
+  .parallax-container .section {
+    width: 100%;
+  }
+
+@media only screen and (max-width : 992px) {
+  .parallax-container .section {
+    position: absolute;
+    top: 40%;
+  }
+  #index-banner .section {
+    top: 10%;
+  }
+}
+
+@media only screen and (max-width : 600px) {
+  #index-banner .section {
+    top: 0;
+  }
+}
+
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+  font-size: inherit;
+}
+
+footer.page-footer {
+  margin: 0;
+}
+
+.middle{
+  margin-left:40%;
+  margin-top:10%;
+  height:400px;
+  width:300px;
+  background-color: # #ede9e8 ;
+  border-radius: 5px;
+}
+
+.left{
+  position:fixed;
+  margin-top: inherit;
+  display: inline-block;!important
+  width :30%;!important
+  float :left;!important
+  background-color: #c7b3ae;!important
+  height :100%;!important
+  border-radius: 10px;
+}
+
+.different{
+  position:fixed;
+  margin-top:inherit;
+  display: inline-block;!important
+  width:65%;!important
+  float:left;!important
+  background-color: red;!important
+  height :100%;!important
+  border-radius:10px;
+}

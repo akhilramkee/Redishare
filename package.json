@@ -17,6 +17,9 @@
   },
   "homepage": "https://github.com/akhilramkee/SPLIT#readme",
   "dependencies": {
-    "express": "^4.16.4"
+    "botbuilder": "^3.13.1",
+    "express": "^4.16.4",
+    "mariadb": "^2.0.0-alpha",
+    "restify": "^7.2.1"
   }
 }
