@@ -11,6 +11,7 @@ var connection = mariadb.createPool({
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
+  console.log(req.cookies.user);
 });
 
 router.get('/login',function(req,res,next){
@@ -40,16 +41,17 @@ router.post('/postTag',function(req,res){
           .then((result)=>{
               result1=JSON.parse(result);
               console.log(result1);
-
               if(result1){
-                console.log();
-                //tagid = result1[0].tagid;
+                    tagid = result1[0].insertId;
               }else{
                 connection.query('Insert INTO TAG(tagName) values(?)',post.tag)
                   .then((result)=>{
                       console.log(result[0].insertId);
                       tagid=result[0].insertId;
                     })
+                  .catch(err=>{
+                      console.log(err);
+                  })
                 }
               })
             .catch((err)=>{
@@ -60,7 +62,7 @@ router.post('/postTag',function(req,res){
           //    .then((result)=>{
           //        console.log(result);
           //    })
-              connection.query('Select * from postContent')
+            connection.query('Select * from postContent')
                 .then(rows=>{
                       ass=rows;
 
@@ -104,6 +106,7 @@ router.post('/postTag',function(req,res){
 
 
 router.post('/register',(req,res)=>{
+  var cookie = req.cookies.user;
   var today = new Date();
   var users = {
     "first_name":req.body.first_name,
@@ -121,7 +124,10 @@ router.post('/register',(req,res)=>{
           "email":req.body.email,
           "password":req.body.password
         };
-        req.session.user = user;
+        if(cookie === undefined){
+          res.cookie('user',user,{httpOnly:true});
+          console.log('cookie created successfully');
+        }
         res.render('userPortal',{'username':user.name});
   })
   .catch(err=>{
@@ -129,26 +135,38 @@ router.post('/register',(req,res)=>{
   })
 });
 
+router.post('/signout',(req,res)=>{
+    res.clearCookie("key");
+    res.redirect('/index');
+})
+
 router.post('/login',(req,res)=>{
-  var users={
-    "name":req.body.first_name,
-    "email":req.body.email,
-    "password":req.body.password
+  var cookie = req.cookies.user;
+  console.log(cookie);
+  if(cookie === undefined){
+    var users={
+      "name":req.body.first_name,
+      "email":req.body.email,
+      "password":req.body.password
+    }
+    connection.query('SELECT password from users where email=(?)',[users.email])
+    .then((result)=>{
+        if(result[0].password===users.password){
+            console.log("hello")
+            cookies.set("user",users)
+            res.render('userPortal');
+          }else{
+            res.send('Invalid Credentials')
+            res.render('/');
+        }
+    })
+    .catch(err=>{
+        console.log(err);
+     })
+  }else{
+     var users = cookie;
+     res.render('userPortal',{'username':users.name});
   }
-  connection.query('SELECT password from users where email=(?)',[users.email])
-  .then((result)=>{
-      if(result[0].password===users.password){
-          console.log("hello")
-          req.session.user=users;
-          res.redirect('userPortal');
-      }else{
-          res.send('Invalid Credentials')
-          res.redirect('/');
-      }
-  })
-  .catch(err=>{
-      console.log(err);
-  })
 });
 
 router.get('/trial',(req,res)=>{
@@ -160,13 +178,17 @@ router.get('/userPortal',function(req,res,next){
   var ass1=[];
   connection.query('Select * from postContent')
   .then((rows)=>{
-      console.log(rows);
-      ass = rows;
+      var rows1 = JSON.stringify(rows);
+      if(rows1){
+        ass = rows;
+    }
   })
   connection.query('Select * from TAG')
   .then((rows)=>{
-      console.log(rows);
+      var rows1 = JSON.stringify(rows);
+      if(rows1){
       ass1 = rows;
+    }
   })
   res.render('userPortal',{'result':ass,'result1':ass1});
 });
