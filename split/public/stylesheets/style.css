@@ -11,8 +11,20 @@ nav .brand-logo {
   color: #444;
 }
 
+
+
 p {
   line-height: 2rem;
+}
+
+.nav-wrapper {
+
+  background-color: white;
+}
+
+#logo-container{
+    margin-left: 50px;
+    border-top : 7px grey solid;
 }
 
 .sidenav-trigger {

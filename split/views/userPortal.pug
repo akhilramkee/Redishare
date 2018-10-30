@@ -1,5 +1,4 @@
-
-
+-var username = 'Akhilesh'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,6 +36,8 @@
             <h5 class="center">TAGS</h5>
             <p class="light">
                 ul
+                  for item in result1
+                    li a #{item.TagName}
             </p>
           </div>
         </div>
@@ -45,12 +46,10 @@
           <div class="icon-block">
             <h5 class="center">POSTS</h5>
             <p class="light">
-              if #post
                 <ul>
-                  for item in #post
-                    li=item.content
+                  for item in result
+                    li #{item.content}
                 </ul>
-              end if
             <form method="post" action="/postTag">
               <input type="text" placeholder=#{username} name="username" hidden></input>
               <input type="text" placeholder="TAG" name="tag"></input>
