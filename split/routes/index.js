@@ -22,6 +22,8 @@ router.get('/register',function(req,res,next){
   res.render('register',{tilte:'REGISTER'});
 });
 
+var tagid;
+var postid;
 router.post('/postTag',function(req,res){
       var ass=[];
       var ass1=[];
@@ -29,57 +31,70 @@ router.post('/postTag',function(req,res){
       var post={
         "content":req.body.post_txt,
         "tag":req.body.tag,
-        "email":req.body.username
+        "email":req.cookies.user.email
       };
-      var postid;
-      var tagid;
      connection.query('INSERT INTO postContent(content,email,created) values(?,?,?)',[post.content,post.email,date])
       .then((result)=>{
-          console.log(result);
+        //  console.log(result);
           postid=result.insertId;
-          connection.query('Select `tagid` from `TAG` where `tagName`=(?)',post.tag)
+          console.log(post.tag);
+          connection.query('Select * from `TAG`')
           .then((result)=>{
-              result1=JSON.parse(result);
-              console.log(result1);
-              if(result1){
-                    tagid = result1[0].insertId;
-              }else{
-                connection.query('Insert INTO TAG(tagName) values(?)',post.tag)
+                var resa=0;
+                result1 = JSON.stringify(result);
+                result1 = JSON.parse(result1);
+                console.log(result1);
+                for(var i=0 ; i<result1.length;i++)
+                {
+                  if(result1[i].TagName==post.tag)
+                  {
+                      tagid=result1[i].Tagid;
+                      console.log(tagid);
+                      resa = 1;
+                      break;
+                  }
+                }
+
+              if(resa==0){
+//                    console.log(result[0].tagid)
+                  //  tagid = result[0].tagid;
+                connection.query('Insert INTO TAG(TagName) values(?)',post.tag)
                   .then((result)=>{
-                      console.log(result[0].insertId);
-                      tagid=result[0].insertId;
+                     console.log(result.insertId);
+                      tagid = result.insertId;
                     })
                   .catch(err=>{
                       console.log(err);
                   })
-                }
-              })
-            .catch((err)=>{
-                console.err(err);
-            })
+              }
 
-        //    connection.query('Insert INTO tag_post_mapping(tagid,postid) values(?,?)',[tagid,postid])
-          //    .then((result)=>{
-          //        console.log(result);
-          //    })
+           connection.query('Insert INTO tag_post_mapping(tagid,postid) values(?,?)',[tagid,postid])
+              .then((result)=>{
+                    console.log(result);
+             })
             connection.query('Select * from postContent')
                 .then(rows=>{
+                      console.log(rows);
                       ass=rows;
-
+                     console.log(ass);
               })
               .catch((err)=>{
                   console.err(err);
               })
               connection.query('Select * from TAG')
                 .then(rows=>{
+                    console.log(rows);
                     ass1=rows;
-                    res.render('userPortal',{'result':ass,'result1':ass1});
+                    console.log(ass1);
+                      res.render('userPortal',{'result':ass,'result1':ass1});
                 })
                 .catch((err)=>{
                     console.log(err);
                 })
           })
-      });
+
+      })
+});
 // });
         /*  connection.query('Insert INTO TAG(tagName) values(?)',post.tag)
           .then((result)=>{
@@ -135,10 +150,11 @@ router.post('/register',(req,res)=>{
   })
 });
 
-router.post('/signout',(req,res)=>{
-    res.clearCookie("key");
-    res.redirect('/index');
+router.get('/signout',(req,res)=>{
+    res.clearCookie("user");
+    res.render('index');
 })
+
 
 router.post('/login',(req,res)=>{
   var cookie = req.cookies.user;
@@ -153,8 +169,8 @@ router.post('/login',(req,res)=>{
     .then((result)=>{
         if(result[0].password===users.password){
             console.log("hello")
-            cookies.set("user",users)
-            res.render('userPortal');
+            res.cookie("user",users)
+            res.render('userPortal',{'username':users.name});
           }else{
             res.send('Invalid Credentials')
             res.render('/');

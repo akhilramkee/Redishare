@@ -1,26 +1,28 @@
 <html>
   <head>
     <link href='//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css' rel='stylesheet'>
-    <link rel='stylesheet' href='/stylesheets/style.css'>
+    <link href="stylesheets/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href="stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   </head>
-<body>
+<body style="background-image:url('images/background1.jpg');background-size:cover;">
 <div class="middle">
   <div class="container" id="login">
     <div>
-        <form method='post' action='/register' class='form-vertical'>
+        <form method='post' action='/register' class='form-vertical' data-target="form-mobile">
           <fieldset>
-            <legend><strong class='text-info'> Login page</strong></legend>
+            <legend><strong class='text-info'>Login page</strong></legend>
             <div class="form-group">
-              <input class="form-control" name='first_name' autofocus>
+              <input class="form-control" name='first_name' autofocus placeholder="First Name">
             </div>
             <div class="form-group">
-              <input class="form-control" name='last_name' autofocus>
+              <input class="form-control" name='last_name' autofocus placeholder="Second Name">
             </div>
             <div class="form-group">
-              <input class="form-control" name='email' autofocus>
+              <input class="form-control" name='email' autofocus placeholder="E-mail">
             </div>
             <div class="form-group">
-              <input class="form-control" name='password' autofocus>
+              <input class="form-control" name='password' autofocus placeholder="Password">
             </div>
             <div class="form-action">
                 <input class='btn.btn-primary' type='submit' value='Login'>
@@ -29,5 +31,6 @@
         </form>
     </div>
   </div>
+</div>
 </div>
 </body>

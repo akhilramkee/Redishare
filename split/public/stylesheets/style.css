@@ -67,12 +67,18 @@ footer.page-footer {
 }
 
 .middle{
+
   margin-left:40%;
   margin-top:10%;
-  height:400px;
+  margin-bottom:
+  height:200px;
   width:300px;
-  background-color: # #ede9e8 ;
+  background-color:#ccccff;
   border-radius: 5px;
+}
+
+#bg{
+  background-color: red;
 }
 
 .left{
@@ -85,7 +91,6 @@ footer.page-footer {
   height :100%;!important
   border-radius: 10px;
 }
-
 .different{
   position:fixed;
   margin-top:inherit;

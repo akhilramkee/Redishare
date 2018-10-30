@@ -50,7 +50,7 @@
                 <ul>
                 if result
                   for item in result
-                    li #{item.content}
+                    li #{item.content},#{item.email}
                 </ul>
             <form method="post" action="/postTag">
               <input type="text" placeholder=#{username} name="username" hidden></input>
