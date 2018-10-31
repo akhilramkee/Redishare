@@ -1,4 +1,6 @@
--var username = 'Akhilesh'
+<!--var username = 'Akhilesh'-->
+-var tagvalue;
+-var postid;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,58 +11,74 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   <link href="stylesheets/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
   <link href="stylesheets/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  </script>
+
 </head>
-<body>
+<body bgcolor="#ccccff">
   <nav class="white" role="navigation">
     <div class="nav-wrapper container">
-      <a id="logo-container" href="\" class="brand-logo">Reddit</a>
+      <a id="logo-container" href="\" class="brand-logo">Redishare</a>
       <ul class="right hide-on-med-and-down">
         <li name="username"><a href="#">#{username}</a></li>
-        <li><a href="signout">signout</a>
+        <li><a href="signout" style="color:red">signout</a>
         </li>
       </ul>
 
       <ul id="nav-mobile" class="sidenav">
-        <li>{sessions}</li>
-        <li><a href="signout">signout</a></li>
+        <li>#{username}</li>
+        <li><a href="signout" style="color:red">signout</a></li>
       </ul>
       <a href="#" data-target="nav-mobile" class="sidenav-trigger"><i class="material-icons">menu</i></a>
     </div>
   </nav>
+
+<div id="d">
+  <form method="post" action="/postTag">
+    <input type="text" placeholder="type here" name="username" hidden></input>
+    <input type="text" placeholder="TAG" name="tag"></input>
+    <textarea name="post_txt" rows="10" cols="40" placeholder="Type here"></textarea>
+    <input type="submit" value="submit">
+  </form>
+</div>
+
   <div class="container">
     <div class="section">
 
       <div class="row">
         <div class="col s5 m2">
+          <div id="qw">
           <div class="icon-block">
-            <h5 class="center">TAGS</h5>
+            <h5 class="center" style="color:red;">TAGS</h5>
             <p class="light">
               if result1
-                ul
+                uls
                   for item in result1
-                    li a #{item.TagName}
-            </p>
+                    <ul><li> <a name=#item.TagName > #{item.TagName} </span></a> </li></ul>
+                  </p>
+            </div>
           </div>
         </div>
+
 
         <div class="col s5 m10">
+          <div id="qwe">
           <div class="icon-block">
             <h5 class="center">POSTS</h5>
-            <p class="light">
-                <ul>
+            <p class="light" style="border-bottom:0.01px solid black;">
+
                 if result
                   for item in result
-                    li #{item.content},#{item.email}
-                </ul>
-            <form method="post" action="/postTag">
-              <input type="text" placeholder=#{username} name="username" hidden></input>
-              <input type="text" placeholder="TAG" name="tag"></input>
-              <textarea name="post_txt" rows="10" cols="40" placeholder="Type here"></textarea>
-              <input type="submit" value="submit">
-            </form>
+                      <div class="container">
+                        <div class="cols s5 m7" style="border-bottom:0.5px solid black;">
+                          <p class="light"> #{item.content}</p>
+                        </div>
+                        <div class="cols s5 m5" style="border-bottom:0.5px solid black;">
+                          <span class="light" style="float:right">#{item.email}</span>
+                        </div>
+                      </div>
             </p>
           </div>
         </div>
-
+      </div>
 </body>
 </html>

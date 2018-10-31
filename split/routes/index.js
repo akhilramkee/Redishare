@@ -8,6 +8,7 @@ var connection = mariadb.createPool({
     password : 'root',
     database : 'SPLIT'
 });
+var insertid;
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -33,10 +34,13 @@ router.post('/postTag',function(req,res){
         "tag":req.body.tag,
         "email":req.cookies.user.email
       };
+      if(post.content=="" || post.tag==""){
+          res.send("Go Back and enter something....");
+      }else {
      connection.query('INSERT INTO postContent(content,email,created) values(?,?,?)',[post.content,post.email,date])
       .then((result)=>{
         //  console.log(result);
-          postid=result.insertId;
+          postid=result.insertId;var cookie = req.cookies.user;
           console.log(post.tag);
           connection.query('Select * from `TAG`')
           .then((result)=>{
@@ -53,15 +57,17 @@ router.post('/postTag',function(req,res){
                       resa = 1;
                       break;
                   }
+                  tagid = result1[i].Tagid;
                 }
+                console.log(resa);
 
               if(resa==0){
 //                    console.log(result[0].tagid)
                   //  tagid = result[0].tagid;
+                  tagid = tagid+1;
                 connection.query('Insert INTO TAG(TagName) values(?)',post.tag)
                   .then((result)=>{
-                     console.log(result.insertId);
-                      tagid = result.insertId;
+                     console.log(result);
                     })
                   .catch(err=>{
                       console.log(err);
@@ -81,12 +87,19 @@ router.post('/postTag',function(req,res){
               .catch((err)=>{
                   console.err(err);
               })
+              var arra=[];
+              connection.query('Select * from tag_post_mapping')
+              .then((result)=>{
+                  result = JSON.stringify(result);
+                  result = JSON.parse(result);
+                  arra = result;
+              })
               connection.query('Select * from TAG')
                 .then(rows=>{
                     console.log(rows);
                     ass1=rows;
                     console.log(ass1);
-                      res.render('userPortal',{'result':ass,'result1':ass1});
+                      res.render('userPortal',{'result':ass,'result1':ass1,'result2':arra});
                 })
                 .catch((err)=>{
                     console.log(err);
@@ -94,30 +107,19 @@ router.post('/postTag',function(req,res){
           })
 
       })
+    }
 });
-// });
-        /*  connection.query('Insert INTO TAG(tagName) values(?)',post.tag)
-          .then((result)=>{
-              tagid=result.insertId;
-              console.log(result);
-              connection.query('Insert INTO tag_post_mapping(tagid,postid) values(?,?)',[tagid,postid])
-              .then((result)=>{
-                  console.log(result);
-              })
-              .catch((err)=>{
-                console.log(err);
-              })
-          })
-          .catch((err)=>{
-              console.log(err);
-          })  */
-        /*connection.query('Select * from postContent')
-          .then(rows=>{
-                ass=rows;
-            })
-          })*/
-      //  res.render('userPortal',{result:ass})
-//  });
+
+router.get('/dashboard/:email',function(req,res)  {
+      var post=[];
+      connection.query('Select * from postContent where `tagName`=(?)',email)
+      .then(result=>{
+          var result1 = JSON.stringify(result);
+          result1  = JSON.parse(result1);
+          post = result1;
+          res.render('dashboard',{'email':email,'post':post});
+      })
+});
 
 
 router.post('/register',(req,res)=>{
@@ -133,17 +135,36 @@ router.post('/register',(req,res)=>{
   }
   connection.query('INSERT INTO users(first_name,last_name,email,password,created,modified) value (?,?,?,?,?,?)',[users.first_name,users.last_name,users.email,users.password,users.created,users.modified])
   .then((result)=>{
-       console.log(result)
+        var ass=[];
+        var ass1=[];
         var user={
           "name":req.body.first_name,
           "email":req.body.email,
           "password":req.body.password
         };
+        connection.query('INSERT INTO userLog(email,logged_in) values(?,?)',[users.email,today])
+        .then((res)=>{
+              insertid = res.insertId;
+        })
         if(cookie === undefined){
           res.cookie('user',user,{httpOnly:true});
           console.log('cookie created successfully');
         }
-        res.render('userPortal',{'username':user.name});
+        connection.query('Select * from postContent')
+            .then(rows=>{
+              //    console.log(rows);
+                  ass=rows;
+            //     console.log(ass);
+          })
+          .catch((err)=>{
+              console.err(err);
+          })
+          connection.query('Select * from TAG')
+            .then(rows=>{
+              //  console.log(rows);
+                ass1=rows;
+          })
+        res.render('userPortal',{'username':user.name,'result':ass,'result1':ass1});
   })
   .catch(err=>{
     console.log(err);
@@ -151,6 +172,7 @@ router.post('/register',(req,res)=>{
 });
 
 router.get('/signout',(req,res)=>{
+    var date=new Date();
     res.clearCookie("user");
     res.render('index');
 })
@@ -165,23 +187,32 @@ router.post('/login',(req,res)=>{
       "email":req.body.email,
       "password":req.body.password
     }
-    connection.query('SELECT password from users where email=(?)',[users.email])
+    console.log(users);
+    connection.query('SELECT `password` from `users` where `email`=(?)',[users.email])
     .then((result)=>{
+        var date = new Date();
         if(result[0].password===users.password){
-            console.log("hello")
             res.cookie("user",users)
-            res.render('userPortal',{'username':users.name});
+            connection.query('INSERT INTO userLog(email,logged_in) values(?,?)',[users.email,date])
+            .then((res)=>{
+                  insertid = res.insertId;
+            })
+            res.redirect('userPortal');
           }else{
             res.send('Invalid Credentials')
             res.render('/');
         }
     })
     .catch(err=>{
-        console.log(err);
+        res.send('Invalid Credentials')
+        res.render('/')
      })
   }else{
-     var users = cookie;
-     res.render('userPortal',{'username':users.name});
+     connection.query('INSERT INTO userLog(email,logged_in) values(?,?)',[users.email,date])
+     .then((res)=>{
+          insertid = res.insertId;
+     })
+     res.redirect('userPortal');
   }
 });
 
@@ -190,35 +221,56 @@ router.get('/trial',(req,res)=>{
 });
 
 router.get('/userPortal',function(req,res,next){
+  var cookie = req.cookies.user;
   var ass=[];
   var ass1=[];
-  connection.query('Select * from postContent')
+  var arra=[];
+  if(cookie === undefined){
+      res.render('index');
+  }
+connection.query('Select * from postContent')
   .then((rows)=>{
-      var rows1 = JSON.stringify(rows);
-      if(rows1){
+       rows = JSON.stringify(rows);
+       rows = JSON.parse(rows);
         ass = rows;
-    }
+    })
+connection.query('Select * from tag_post_mapping')
+  .then((result)=>{
+    result = JSON.stringify(result);
+    result = JSON.parse(result);
+    arra = result;
   })
-  connection.query('Select * from TAG')
+connection.query('Select * from TAG')
   .then((rows)=>{
-      var rows1 = JSON.stringify(rows);
-      if(rows1){
-      ass1 = rows;
-    }
+       rows = JSON.stringify(rows);
+       rows = JSON.parse(rows);
+       ass1 = rows;
   })
-  res.render('userPortal',{'result':ass,'result1':ass1});
+  console.log(cookie);
+  res.render('userPortal',{'result':ass,'result1':ass1,'result2':arra,'username':cookie.name});
+
 });
 
-router.post('/getall',function(req,res){
-    connection.query(`SELECT first_name from users`)
-    .then((first_name)=>{
-        res.first_name = JSON.stringify(first_name)
-        console.log(res.first_name)
-        res.render('trial',{first_name:first_name})
-    })
-    .catch((err)=>{
-        console.log(err);
-    })
-})
+/*router.post('/delete',function(req,res)=>{
+      var tag = user.body.tag;
+      var array=[];
+      connection.query('Select tagid from tag where tagname=(?)',tag)
+      .then((result)=>{
+          result = JSON.stringify(result);
+          result = JSON.parse(result);
+          connection.query('Select postid from tag_post_mapping where tagid=(?)',result.tagid)
+          .then((result)=>{
+              result = JSON.stringify(result);
+              result = JSON.parse(result);
+              connection.query('Select content from postContent where postid=(?)',result.postid)
+              .then((result)=>{
+                  result = JSON.stringify(result);
+                  result = JSON.parse(result);
+                  array = result;
+                  res.render('deletecontent',{'content':result});
+            })
+        })
+      }
+});*/
 
 module.exports = router;

@@ -77,6 +77,16 @@ footer.page-footer {
   border-radius: 5px;
 }
 
+#d{
+  margin-left:30%;
+  margin-right:30%;
+  margin-top:100px;
+  border-radius:4px;
+  padding:5px;
+  background-color: #ECE9E9;
+
+}
+
 #bg{
   background-color: red;
 }
@@ -90,6 +100,12 @@ footer.page-footer {
   background-color: #c7b3ae;!important
   height :100%;!important
   border-radius: 10px;
+}
+#qw{
+  border-right : 2px black solid;
+}
+#qwe{
+  border-left : 2px red solid;
 }
 .different{
   position:fixed;
