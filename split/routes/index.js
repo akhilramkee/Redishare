@@ -181,6 +181,7 @@ router.get('/signout',(req,res)=>{
 router.post('/login',(req,res)=>{
   var cookie = req.cookies.user;
   console.log(cookie);
+  var date = new Date();
   if(cookie === undefined){
     var users={
       "name":req.body.first_name,
@@ -190,7 +191,7 @@ router.post('/login',(req,res)=>{
     console.log(users);
     connection.query('SELECT `password` from `users` where `email`=(?)',[users.email])
     .then((result)=>{
-        var date = new Date();
+
         if(result[0].password===users.password){
             res.cookie("user",users)
             connection.query('INSERT INTO userLog(email,logged_in) values(?,?)',[users.email,date])
@@ -208,7 +209,7 @@ router.post('/login',(req,res)=>{
         res.render('/')
      })
   }else{
-     connection.query('INSERT INTO userLog(email,logged_in) values(?,?)',[users.email,date])
+     connection.query('INSERT INTO userLog(email,logged_in) values(?,?)',[cookie.email,date])
      .then((res)=>{
           insertid = res.insertId;
      })
